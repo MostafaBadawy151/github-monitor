@@ -1,0 +1,84 @@
+<kendo-grid
+  [kendoGridBinding]="commits()"
+  [loading]="loading()"
+  [sortable]="{ allowUnsort: false }"
+  [sort]="sort"
+  [selectable]="false"
+  [navigable]="true"
+  class="commits-grid"
+>
+  <!-- Desktop / tablet columns -->
+  <kendo-grid-column field="messageHeadline" title="Commit Message" [media]="wide">
+    <ng-template kendoGridCellTemplate let-commit>
+      <span class="message" [attr.title]="commit.message">{{ commit.messageHeadline }}</span>
+    </ng-template>
+  </kendo-grid-column>
+
+  <kendo-grid-column field="author" title="Author" [width]="170" [media]="wide">
+    <ng-template kendoGridCellTemplate let-commit>
+      <div class="author">
+        <span>{{ commit.author }}</span>
+        @if (commit.authorLogin && commit.authorLogin !== commit.author) {
+          <small>&#64;{{ commit.authorLogin }}</small>
+        }
+      </div>
+    </ng-template>
+  </kendo-grid-column>
+
+  <kendo-grid-column field="date" title="Date" [width]="185" [media]="wide">
+    <ng-template kendoGridCellTemplate let-commit>
+      <span [attr.title]="commit.date.toISOString()">{{ commit.date | date: 'MMM d, y, h:mm a' }}</span>
+    </ng-template>
+  </kendo-grid-column>
+
+  <kendo-grid-column field="shortSha" title="Commit SHA" [width]="120" [media]="wide">
+    <ng-template kendoGridCellTemplate let-commit>
+      @if (commit.url) {
+        <a class="sha" [href]="commit.url" target="_blank" rel="noopener" [attr.title]="commit.sha">{{ commit.shortSha }}</a>
+      } @else {
+        <code class="sha" [attr.title]="commit.sha">{{ commit.shortSha }}</code>
+      }
+    </ng-template>
+  </kendo-grid-column>
+
+  <kendo-grid-column field="source" title="Source" [width]="120" [media]="wide">
+    <ng-template kendoGridCellTemplate let-commit>
+      <kendo-chip
+        [label]="commit.source"
+        size="small"
+        rounded="full"
+        [themeColor]="commit.source === 'Live' ? 'info' : 'success'"
+      />
+    </ng-template>
+  </kendo-grid-column>
+
+  <!-- Phone: one stacked column that still shows every required field -->
+  <kendo-grid-column field="date" title="Commits" [media]="narrow">
+    <ng-template kendoGridCellTemplate let-commit>
+      <div class="stacked">
+        <span class="message" [attr.title]="commit.message">{{ commit.messageHeadline }}</span>
+        <div class="meta">
+          <span>{{ commit.author }}</span>
+          <span>{{ commit.date | date: 'MMM d, y, h:mm a' }}</span>
+        </div>
+        <div class="meta">
+          @if (commit.url) {
+            <a class="sha" [href]="commit.url" target="_blank" rel="noopener">{{ commit.shortSha }}</a>
+          } @else {
+            <code class="sha">{{ commit.shortSha }}</code>
+          }
+          <kendo-chip
+            [label]="commit.source"
+            size="small"
+            rounded="full"
+            [themeColor]="commit.source === 'Live' ? 'info' : 'success'"
+          />
+        </div>
+      </div>
+    </ng-template>
+  </kendo-grid-column>
+
+  <ng-template kendoGridNoRecordsTemplate>
+    <div class="empty">{{ loading() ? 'Loading…' : emptyText() }}</div>
+  </ng-template>
+</kendo-grid>

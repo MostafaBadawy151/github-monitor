@@ -1,0 +1,23 @@
+/* Kendo Default theme is included via angular.json ("styles"). */
+
+:root {
+  --app-bg: #f6f8fa;
+  --app-surface: #ffffff;
+  --app-border: #d0d7de;
+  --app-muted: #57606a;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  background: var(--app-bg);
+  color: #1f2328;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}

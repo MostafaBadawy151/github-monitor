@@ -1,0 +1,99 @@
+<div class="sections">
+  <!-- A) Live commits -->
+  <section class="panel" aria-labelledby="live-title">
+    <header class="panel-header">
+      <div class="panel-title">
+        <h2 id="live-title">Live Commits</h2>
+        <p>Fetched in real time from GitHub through the WCF service.</p>
+      </div>
+      <button
+        kendoButton
+        themeColor="primary"
+        [svgIcon]="icons.refresh"
+        [disabled]="liveLoading()"
+        (click)="refreshLive()"
+      >
+        {{ liveLoading() ? 'Refreshing…' : 'Refresh Live Data' }}
+      </button>
+    </header>
+
+    <div class="meta-row">
+      @if (live(); as data) {
+        <span class="meta-item">
+          <kendo-svgicon [icon]="icons.cloud" />
+          Fetched at <strong>{{ data.lastSyncTime | date: 'medium' }}</strong>
+          <span class="muted">({{ liveFetchedAgo() }})</span>
+        </span>
+        <span class="meta-item muted">{{ data.commits.length }} commits</span>
+      } @else if (!liveLoading()) {
+        <span class="meta-item muted">No live data yet. Click "Refresh Live Data".</span>
+      }
+    </div>
+
+    <app-commits-grid
+      [commits]="live()?.commits ?? []"
+      [loading]="liveLoading()"
+      emptyText='Click "Refresh Live Data" to fetch the latest commits.'
+    />
+  </section>
+
+  <!-- B) Scheduled commits -->
+  <section class="panel" aria-labelledby="scheduled-title">
+    <header class="panel-header">
+      <div class="panel-title">
+        <h2 id="scheduled-title">Scheduled Commits</h2>
+        <p>Cached by the Quartz job, which syncs with GitHub every minute.</p>
+      </div>
+      <button
+        kendoButton
+        fillMode="outline"
+        [svgIcon]="icons.refresh"
+        [disabled]="scheduledLoading()"
+        (click)="refreshScheduled('manual')"
+      >
+        Reload Cache
+      </button>
+    </header>
+
+    <div class="meta-row">
+      <span class="meta-item last-sync">
+        <kendo-svgicon [icon]="icons.clock" />
+        LastSyncTime:
+        @if (scheduled()?.lastSyncTime; as syncTime) {
+          <strong>{{ syncTime | date: 'medium' }}</strong>
+          <span class="muted">({{ lastSyncAgo() }})</span>
+        } @else {
+          <strong>{{ scheduledLoading() ? 'loading…' : 'not synced yet' }}</strong>
+        }
+      </span>
+      @if (scheduled()?.lastAttemptTime; as attempt) {
+        <span class="meta-item muted">Last attempt: {{ attempt | date: 'mediumTime' }}</span>
+      }
+      <span class="meta-item muted">Auto-refreshes every 30s</span>
+    </div>
+
+    @if (scheduledPollError(); as pollError) {
+      <div class="k-messagebox k-messagebox-error notice" role="status">
+        <kendo-svgicon [icon]="icons.warning" />
+        Auto-refresh failed: {{ pollError }} Showing the last loaded data.
+      </div>
+    }
+
+    @if (scheduled(); as data) {
+      @if (data.isStale) {
+        <div class="k-messagebox k-messagebox-warning notice" role="status">
+          <kendo-svgicon [icon]="icons.warning" />
+          {{ data.message }}
+        </div>
+      } @else if (!data.lastSyncTime) {
+        <div class="k-messagebox k-messagebox-info notice" role="status">{{ data.message }}</div>
+      }
+    }
+
+    <app-commits-grid
+      [commits]="scheduled()?.commits ?? []"
+      [loading]="scheduledLoading() && !scheduled()"
+      emptyText="No cached commits yet. The scheduler fills the cache within a minute."
+    />
+  </section>
+</div>

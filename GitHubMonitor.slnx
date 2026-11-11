@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/GitHubMonitor.Api/GitHubMonitor.Api.csproj" />
+    <Project Path="src/GitHubMonitor.Core/GitHubMonitor.Core.csproj" />
+    <Project Path="src/GitHubMonitor.WcfHost/GitHubMonitor.WcfHost.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/GitHubMonitor.Tests/GitHubMonitor.Tests.csproj" />
+  </Folder>
+</Solution>
